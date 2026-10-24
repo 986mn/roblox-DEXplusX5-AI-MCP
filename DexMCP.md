@@ -13,7 +13,7 @@ AI 能看到你在 DEX 里选中的对象，也能反过来驱动 DEX 跳转、�
 ```lua
 -- 在 Roblox 执行器里直接跑，DEX 与桥接一同加载
 loadstring(game:HttpGet(
-  "https://raw.githubusercontent.com/986mn/DexPlusPlusPlusPlus/main/script.lua"
+  "https://raw.githubusercontent.com/986mn/roblox-DEXplusX5-AI-MCP/main/script.lua"
 ))()
 ```
 
