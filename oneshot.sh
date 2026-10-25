@@ -82,13 +82,13 @@ cat <<INFO
    ))()
 
    loadstring(game:HttpGet(
-     "https://raw.githubusercontent.com/986mn/roblox-DEXplusX5-AI-MCP/main/lua/dex_mcp_poller.lua"
+     "https://raw.githubusercontent.com/986mn/roblox-DEXplusX5-AI-MCP/main/dex_mcp_poller.lua"
    ))()
 
    —— 可选：悬浮按钮 ——
 
    loadstring(game:HttpGet(
-     "https://raw.githubusercontent.com/986mn/roblox-DEXplusX5-AI-MCP/main/abc/dex_mcp_C.lua"
+     "https://raw.githubusercontent.com/986mn/roblox-DEXplusX5-AI-MCP/main/dex_mcp_C.lua"
    ))()
 
   ============================================================
