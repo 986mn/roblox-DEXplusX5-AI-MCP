@@ -29,10 +29,10 @@ for f in dist/index.js dist/http.js dist/queue.js dist/bridge.js; do
 done
 
 step 4/4 "Verify bridge payloads"
-if [ ! -f "$ROOT/lua/dex_mcp_poller.lua" ]; then
-  echo "MISSING: lua/dex_mcp_poller.lua" >&2
+if [ ! -f "$ROOT/dex_mcp_poller.lua" ]; then
+  echo "MISSING: dex_mcp_poller.lua" >&2
   exit 1
 fi
-echo "  ok  lua/dex_mcp_poller.lua"
+echo "  ok  dex_mcp_poller.lua"
 
 printf '\nSetup complete. The server starts automatically on container start.\n'
