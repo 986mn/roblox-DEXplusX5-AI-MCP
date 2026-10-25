@@ -2,11 +2,13 @@
 // MCP server entry point. Speaks MCP over stdio and serves HTTP on PORT.
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
+import type { Server as HttpServer } from "node:http";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import { startHttp, PORT } from "./http.js";
+import { startHttp, PORT, setMcpHandler } from "./http.js";
 import { queue } from "./queue.js";
 import * as dex from "./bridge.js";
 
@@ -183,10 +185,11 @@ const server = new Server(
 
 server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: TOOLS }));
 
-server.setRequestHandler(CallToolRequestSchema, async (req) => {
-  const { name, arguments: rawArgs } = req.params;
-  const args = (rawArgs ?? {}) as Record<string, unknown>;
+server.setRequestHandler(CallToolRequestSchema, async (req) =>
+  handleToolCall(req.params.name, (req.params.arguments ?? {}) as Record<string, unknown>),
+);
 
+async function handleToolCall(name: string, args: Record<string, unknown>) {
   try {
     switch (name) {
       case "dex-snapshot":
@@ -251,22 +254,45 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
   } catch (err) {
     return fail(err instanceof Error ? err.message : String(err));
   }
-});
+}
 
 async function main() {
   // HTTP side (executor channel)
+  let httpServer: HttpServer | undefined;
   try {
-    await startHttp(PORT);
+    httpServer = await startHttp(PORT);
     console.error(`[http] listening on 0.0.0.0:${PORT}`);
   } catch (err) {
     console.error(`[http] failed to bind ${PORT}: ${String(err)}`);
     console.error("[http] MCP will still start, but the executor cannot connect");
   }
 
-  // MCP side (AI channel)
+  // MCP side (AI channel, local stdio)
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error("[mcp] stdio transport ready");
+
+  // Remote MCP (Streamable HTTP) — mount a second server instance on /mcp
+  mountRemoteMcp(httpServer);
+  console.error("[mcp] streamable HTTP ready at /mcp");
+}
+
+function mountRemoteMcp(_httpServer: HttpServer | undefined) {
+  // Register the /mcp handler into the existing HTTP server.
+  setMcpHandler(async (req, res) => {
+    const remoteServer = new Server(
+      { name: "roblox-dexplusx5-ai-mcp", version: "1.0.0" },
+      { capabilities: { tools: {} } },
+    );
+    remoteServer.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: TOOLS }));
+    remoteServer.setRequestHandler(CallToolRequestSchema, async (r) =>
+      handleToolCall(r.params.name, (r.params.arguments ?? {}) as Record<string, unknown>),
+    );
+
+    const transport = new StreamableHTTPServerTransport({});
+    await remoteServer.connect(transport);
+    await transport.handleRequest(req, res);
+  });
 }
 
 main().catch((err) => {
