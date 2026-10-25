@@ -4,6 +4,14 @@ import { queue } from "./queue.js";
 import type { DexEvent, JobResult } from "./types.js";
 
 export const PORT = Number(process.env.PORT ?? 16384);
+
+// Optional handler for the remote MCP (Streamable HTTP) endpoint.
+// index.ts registers it; http.ts calls it on POST /mcp.
+export type McpHandler = (req: import("node:http").IncomingMessage, res: import("node:http").ServerResponse) => Promise<void>;
+let mcpHandler: McpHandler | null = null;
+export function setMcpHandler(h: McpHandler | null): void {
+  mcpHandler = h;
+}
 const MAX_BODY = 8 * 1024 * 1024;
 
 function json(res: http.ServerResponse, code: number, body: unknown): void {
@@ -79,6 +87,10 @@ export function createHttpServer(): http.Server {
     const url = new URL(req.url ?? "/", `http://${req.headers.host ?? "localhost"}`);
     const method = req.method ?? "GET";
     const path = url.pathname.replace(/\/+$/, "") || "/";
+
+    if (path === "/mcp" && mcpHandler) {
+      return await mcpHandler(req, res);
+    }
 
     if (method === "OPTIONS") return noContent(res);
 
