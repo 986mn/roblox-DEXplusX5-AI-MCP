@@ -1,0 +1,28 @@
+{
+  "name": "DEX++ MCP Bridge",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:22-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "forwardPorts": [16384],
+  "portsAttributes": {
+    "16384": {
+      "label": "DEX++ MCP Bridge",
+      "onAutoForward": "ignore",
+      "visibility": "public",
+      "protocol": "http"
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postStartCommand": "bash .devcontainer/start.sh",
+  "postAttachCommand": "bash .devcontainer/ensure-running.sh --quiet",
+  "remoteUser": "node",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "sumneko.lua",
+        "dbaeumer.vscode-eslint"
+      ]
+    }
+  }
+}

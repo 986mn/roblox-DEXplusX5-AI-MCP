@@ -1,0 +1,29 @@
+{
+  "name": "roblox-dexplusx5-ai-mcp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MCP server bridging DEX PlusPlusPlusPlus to AI agents",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "roblox-dexplusx5-ai-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "http": "node dist/http.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "typescript": "^5.6.3"
+  }
+}
