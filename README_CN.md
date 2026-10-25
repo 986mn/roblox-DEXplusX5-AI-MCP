@@ -1,3 +1,99 @@
+# roblox-DEXplusX5-AI-MCP
+
+<p align="center">
+  <img src="abc/banner.svg" alt="roblox-DEXplusX5-AI-MCP" width="100%"/>
+</p>
+
+<p align="center">
+  <strong>DEX PlusPlusPlusPlus ↔ AI/MCP 双向桥接</strong><br/>
+  <sub>让 Claude / Cursor 等 AI 客户端直接读写你的 DEX 调试会话</sub>
+</p>
+
+<p align="center">
+  <img src="abc/demo.gif" alt="演示" width="480"/>
+</p>
+
+> **本 fork 在上游 [DEX++ (snmwdd/DexPlusPlusPlusPlus)](https://github.com/snmwdd/DexPlusPlusPlusPlus) 基础上新增了 AI/MCP 桥接能力。**
+>
+> 通过一个 Node.js MCP 服务端 + 执行器侧 Lua 轮询器，让 Claude / Cursor 等 AI 客户端直接读写你的 DEX 会话：查看选中对象、读属性、反编译脚本、改属性、执行 Luau。
+
+---
+
+## 快速开始（MCP 桥接）
+
+**1. 起服务端**（本机或 Codespaces，见 [DEPLOY.md](./DEPLOY.md)）
+
+```bash
+git clone https://github.com/986mn/roblox-DEXplusX5-AI-MCP.git
+cd roblox-DEXplusX5-AI-MCP
+bash abc/oneshot.sh
+```
+
+**2. 执行器里加载**
+
+```lua
+getgenv().BridgeURL = "localhost:16384"  -- 或局域网 IP / Codespaces https 地址
+
+-- DEX++ 本体 + DexMCP 模块
+loadstring(game:HttpGet(
+  "https://raw.githubusercontent.com/986mn/roblox-DEXplusX5-AI-MCP/main/script.lua"
+))()
+
+-- 轮询器（连接 MCP 服务端）
+loadstring(game:HttpGet(
+  "https://raw.githubusercontent.com/986mn/roblox-DEXplusX5-AI-MCP/main/lua/dex_mcp_poller.lua"
+))()
+```
+
+看到 `[DPP-MCP] injected` 和 `[DPP-POLL] connected` 就通了。
+
+**详细部署（Codespaces / 本机 / 局域网）与故障排查：见 [DEPLOY.md](./DEPLOY.md)**
+
+**DEX 桥接 API 说明：见 [DexMCP.md](./DexMCP.md)**
+
+---
+
+## 五种形态（abc/ 目录）
+
+| 版本 | 内容 | 适用 |
+|---|---|---|
+| **A** | 完整读写 API | 只要 API |
+| **C** | 悬浮按钮 + 队列 | 只要 UI |
+| **AC** | A + C 合并 | 完整功能，推荐 |
+| **B** | 运行时包装器（含 A） | 用官方 DEX |
+| **BC** | B + C | 官方 DEX + 按钮 |
+
+```lua
+-- AC 合并单文件（API + 按钮）
+loadstring(game:HttpGet(".../abc/dex_mcp_AC.lua"))()
+
+-- BC（官方 DEX + 按钮）
+getgenv().DEX_URL = "https://raw.githubusercontent.com/snmwdd/DexPlusPlusPlusPlus/refs/heads/main/script.lua"
+loadstring(game:HttpGet(".../abc/dex_mcp_BC.lua"))()
+```
+
+---
+
+## 目录结构
+
+```
+server/                 MCP 服务端（TypeScript，11 个 dex-* 工具）
+lua/dex_mcp_poller.lua 执行器侧轮询器
+abc/                    五种形态脚本 + oneshot.sh + 配图（banner/demo）
+src/modules/DexMCP.lua DEX 桥接模块（注入 getgenv().DEX）
+src/                    上游 DEX++ 源码（未改动）
+script.lua              DEX++ 构建产物（已含 DexMCP）
+.devcontainer/          Codespaces 自动部署 + 保活
+```
+
+> **注意**：仓库已从 `DexPlusPlusPlusPlus` 改名为 `roblox-DEXplusX5-AI-MCP`，旧的 raw 链接已失效。
+
+---
+
+---
+
+# 以下是上游 DEX++ 原始中文 README（未改动）
+
 # Dex# v12.0 (DexPlusPlusPlusPlus)
 
 ![DevTool Dex#](https://img.shields.io/badge/DevTool-Dex++++-green)
