@@ -161,7 +161,7 @@ local function probeAndSelect()
 		table.insert(candidates, configured)
 		-- if the user typed https:// but the executor lacks TLS, try http:// as well
 		if configured:match("^https://") then
-			table.insert(candidates, configured:gsub("^https://", "http://", 1))
+			table.insert(candidates, (configured:gsub("^https://", "http://", 1)))
 		end
 	end
 
