@@ -69,7 +69,8 @@ printf '   Dashboard : %s/\n' "$URL"
 printf '   Status    : %s/api/status\n\n' "$URL"
 printf '   Paste into your executor BEFORE loading DEX++:\n\n'
 printf '     getgenv().BridgeURL = "%s"\n' "$URL"
-printf '     loadstring(game:HttpGet("https://raw.githubusercontent.com/986mn/roblox-DEXplusX5-AI-MCP/main/script.lua"))()\n\n'
+printf '     loadstring(game:HttpGet("https://raw.githubusercontent.com/986mn/roblox-DEXplusX5-AI-MCP/main/script.lua"))()\n'
+printf '     loadstring(game:HttpGet("https://raw.githubusercontent.com/986mn/roblox-DEXplusX5-AI-MCP/main/dex_mcp_poller.lua"))()\n\n'
 printf '   If https fails on your executor use your LAN IP instead.\n'
 printf '  ============================================================\n\n'
 
