@@ -4,17 +4,19 @@
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
-  "forwardPorts": [16384],
+  "forwardPorts": [
+    16384
+  ],
   "portsAttributes": {
     "16384": {
       "label": "DEX++ MCP Bridge",
-      "onAutoForward": "ignore",
+      "onAutoForward": "silent",
       "visibility": "public",
-      "protocol": "http"
+      "protocol": "https"
     }
   },
   "postCreateCommand": "bash .devcontainer/setup.sh",
-  "postStartCommand": "bash .devcontainer/start.sh",
+  "postStartCommand": "nohup bash .devcontainer/start.sh > /tmp/poststart.log 2>&1 &",
   "postAttachCommand": "bash .devcontainer/ensure-running.sh --quiet",
   "remoteUser": "node",
   "customizations": {
